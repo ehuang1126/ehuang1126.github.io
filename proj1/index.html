@@ -1,1 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project 1: Colorizing the Prokudin-Gorskii photo collection</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        img {
+            width:500px;
+            height: auto;
+        }
+
+        .caption {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Project 1: Colorizing the Prokudin-Gorskii photo collection</h1>
+    <p>Evan Huang</p>
+    <h2>Approach:</h2>
+
+    <p>I tried various methods to align the channels, including various metrics and algorithm parameters. Some metrics 
+        I tried out included L2 distance, normalized cross-correlation, structural similarity, and phase cross-correlation. Structural similarity 
+        and phase cross-correlation were most effective for single-scale images, but were often much too computationally expensive for the larger 
+        .tif files. My solution to this was to use structural similarity on the base layer of the image pyramid, 
+        so it only applied to the coarsest (and thus smallest) image on the stack. From there, I used other metrics that were less
+        computationally demanding on the larger images. On the larger images, I first used NCC, but the results were often blurry so I used structural similarity again but restricted the images to only a 500x500 
+        window in the center of the image to avoid arduous computation (I refer to this as SSIM_small). All images are cropped constant amounts before any processing is done. 
+    </p>
+
+    <p>
+        My pyramid algorithm recursively downsamples the input image with a factor of 0.8 until the image is smaller than
+        300x300 pixels. Then it checks a [-30,30] window for this smallest image to maximize SSIM (disregarding a 30-pixel border).
+        Using the optimal displacements from this layer, each following layer checks a 2-pixel window to maximize either NCC or SSIM_small. I experimented with many
+        different window sizes and number of layers and found that this combination gave a good balance of accuracy and speed. Processing all of the images
+        took <10 minutes in total, even with edge detection. 
+    </p>
+
+    <p>
+        I also utilized edge detection to improve the similarity metrics. I used a Sobel filter on relevant layers to achieve this. 
+        This helped some of the images, but made little difference in others. 
+    </p>
+    
+    <h2>Results for SSIM with/without edge detection</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>SSIM_small</th>
+                <th>SSIM_small w/ edge detection</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/cathedral.jpg" alt="cathedral">
+                    <div class="caption">SSIM - Cathedral</div>
+                    <div class="caption">R: (12, 3)</div>
+                    <div class="caption">G: (5, 2)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/cathedral.jpg" alt="cathedral">
+                    <div class="caption">SSIM w/ Edge Detection - Cathedral</div>
+                    <div class="caption">R: (12, 3)</div>
+                    <div class="caption">G: (5, 2)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/church.jpg" alt="church">
+                    <div class="caption">SSIM - Church</div>
+                    <div class="caption">R: (26, -7)</div>
+                    <div class="caption">G: (23, 4)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/church.jpg" alt="church">
+                    <div class="caption">SSIM w/ Edge Detection - Church</div>
+                    <div class="caption">R: (28, -2)</div>
+                    <div class="caption">G: (24, 4)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/emir.jpg" alt="emir">
+                    <div class="caption">SSIM - Emir</div>
+                    <div class="caption">R: (17, -325)</div>
+                    <div class="caption">G: (47, 18)</div>
+                    <div class="caption">The red channel is still skewed.</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/emir.jpg" alt="emir">
+                    <div class="caption">SSIM w/ Edge Detection - Emir</div>
+                    <div class="caption">R: (88, 34)</div>
+                    <div class="caption">G: (50, 23)</div>
+                    <div class="caption">Using edge detection fixed the red channel's issue.</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/harvesters.jpg" alt="harvesters">
+                    <div class="caption">SSIM - Harvesters</div>
+                    <div class="caption">R: (102, 6)</div>
+                    <div class="caption">G: (57, 18)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/harvesters.jpg" alt="harvesters">
+                    <div class="caption">SSIM w/ Edge Detection - Harvesters</div>
+                    <div class="caption">R: (102, 15)</div>
+                    <div class="caption">G: (49, 18)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/icon.jpg" alt="icon">
+                    <div class="caption">SSIM - Icon</div>
+                    <div class="caption">R: (61, 23)</div>
+                    <div class="caption">G: (40, 18)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/icon.jpg" alt="icon">
+                    <div class="caption">SSIM w/ Edge Detection - Icon</div>
+                    <div class="caption">R: (76, 24)</div>
+                    <div class="caption">G: (40, 18)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/lady.jpg" alt="lady">
+                    <div class="caption">SSIM - Lady</div>
+                    <div class="caption">R: (86, 1)</div>
+                    <div class="caption">G: (47, 7)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/lady.jpg" alt="lady">
+                    <div class="caption">SSIM w/ Edge Detection - Lady</div>
+                    <div class="caption">R: (97, 9)</div>
+                    <div class="caption">G: (49, 1)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/melons.jpg" alt="melons">
+                    <div class="caption">SSIM - Melons</div>
+                    <div class="caption">R: (158, 8)</div>
+                    <div class="caption">G: (81, 10)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/melons.jpg" alt="melons">
+                    <div class="caption">SSIM w/ Edge Detection - Melons</div>
+                    <div class="caption">R: (158, 14)</div>
+                    <div class="caption">G: (74, 6)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/monastery.jpg" alt="monastery">
+                    <div class="caption">SSIM - Monastery</div>
+                    <div class="caption">R: (3, 2)</div>
+                    <div class="caption">G: (-3, 2)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/monastery.jpg" alt="monastery">
+                    <div class="caption">SSIM w/ Edge Detection - Monastery</div>
+                    <div class="caption">R: (3, 2)</div>
+                    <div class="caption">G: (-3, 2)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/onion_church.jpg" alt="onion church">
+                    <div class="caption">SSIM - Onion Church</div>
+                    <div class="caption">R: (88, 37)</div>
+                    <div class="caption">G: (50, 26)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/onion_church.jpg" alt="onion church">
+                    <div class="caption">SSIM w/ Edge Detection - Onion Church</div>
+                    <div class="caption">R: (95, 37)</div>
+                    <div class="caption">G: (50, 26)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/sculpture.jpg" alt="sculpture">
+                    <div class="caption">SSIM - Sculpture</div>
+                    <div class="caption">R: (120, -27)</div>
+                    <div class="caption">G: (33, -10)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/sculpture.jpg" alt="sculpture">
+                    <div class="caption">SSIM w/ Edge Detection - Sculpture</div>
+                    <div class="caption">R: (121, -27)</div>
+                    <div class="caption">G: (34, -10)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/self_portrait.jpg" alt="self_portrait">
+                    <div class="caption">SSIM - Self Portrait</div>
+                    <div class="caption">R: (149, 34)</div>
+                    <div class="caption">G: (76, 26)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/self_portrait.jpg" alt="self_portrait">
+                    <div class="caption">SSIM w/ Edge Detection - Self Portrait</div>
+                    <div class="caption">R: (151, 32)</div>
+                    <div class="caption">G: (66, 19)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/three_generations.jpg" alt="three_generations">
+                    <div class="caption">SSIM - Three Generations</div>
+                    <div class="caption">R: (97, 11)</div>
+                    <div class="caption">G: (52, 16)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/three_generations.jpg" alt="three_generations">
+                    <div class="caption">SSIM w/ Edge Detection - Three Generations</div>
+                    <div class="caption">R: (91, 6)</div>
+                    <div class="caption">G: (52, 16)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/tobolsk.jpg" alt="tobolsk">
+                    <div class="caption">SSIM - Tobolsk</div>
+                    <div class="caption">R: (6, 3)</div>
+                    <div class="caption">G: (3, 3)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/tobolsk.jpg" alt="tobolsk">
+                    <div class="caption">SSIM w/ Edge Detection - Tobolsk</div>
+                    <div class="caption">R: (6, 3)</div>
+                    <div class="caption">G: (3, 2)</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="media/aligned_images_SSIM_small/train.jpg" alt="train">
+                    <div class="caption">SSIM - Train</div>
+                    <div class="caption">R: (74, 22)</div>
+                    <div class="caption">G: (42, 7)</div>
+                </td>
+                <td>
+                    <img src="media/aligned_images_SSIM_small_edge_detection/train.jpg" alt="train">
+                    <div class="caption">SSIM w/ Edge Detection - Train</div>
+                    <div class="caption">R: (66, 34)</div>
+                    <div class="caption">G: (44, 3)</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Results for NCC with/without edge detection</h2>
+<table>
+    <thead>
+        <tr>
+            <th>NCC</th>
+            <th>NCC w/ edge detection</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/cathedral.jpg" alt="cathedral">
+                <div class="caption">NCC - Cathedral</div>
+                <div class="caption">R: (12, 3)</div>
+                <div class="caption">G: (5, 2)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/cathedral.jpg" alt="cathedral">
+                <div class="caption">NCC w/ Edge Detection - Cathedral</div>
+                <div class="caption">R: (12, 3)</div>
+                <div class="caption">G: (5, 2)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/church.jpg" alt="church">
+                <div class="caption">NCC - Church</div>
+                <div class="caption">R: (27, -17)</div>
+                <div class="caption">G: (24, 1)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/church.jpg" alt="church">
+                <div class="caption">NCC w/ Edge Detection - Church</div>
+                <div class="caption">R: (28, -3)</div>
+                <div class="caption">G: (24, 4)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/emir.jpg" alt="emir">
+                <div class="caption">NCC - Emir</div>
+                <div class="caption">R: (15, -325)</div>
+                <div class="caption">G: (43, 3)</div>
+                <div class="caption">The red channel is very skewed here. I suspect it is due to the repeated pattern on the 
+                    shirt inflating SSIM, since I found this issue when I directly tested the base (coarsest) layer.</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/emir.jpg" alt="emir">
+                <div class="caption">NCC w/ Edge Detection - Emir</div>
+                <div class="caption">R: (94, 39)</div>
+                <div class="caption">G: (50, 23)</div>
+                <div class="caption">Using edge detection fixed the red channel's issue.</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/harvesters.jpg" alt="harvesters">
+                <div class="caption">NCC - Harvesters</div>
+                <div class="caption">R: (102, 7)</div>
+                <div class="caption">G: (58, 16)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/harvesters.jpg" alt="harvesters">
+                <div class="caption">NCC w/ Edge Detection - Harvesters</div>
+                <div class="caption">R: (102, 14)</div>
+                <div class="caption">G: (60, 17)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/icon.jpg" alt="icon">
+                <div class="caption">NCC - Icon</div>
+                <div class="caption">R: (63, 23)</div>
+                <div class="caption">G: (40, 17)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/icon.jpg" alt="icon">
+                <div class="caption">NCC w/ Edge Detection - Icon</div>
+                <div class="caption">R: (78, 23)</div>
+                <div class="caption">G: (42, 17)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/lady.jpg" alt="lady">
+                <div class="caption">NCC - Lady</div>
+                <div class="caption">R: (88, 1)</div>
+                <div class="caption">G: (47, 8)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/lady.jpg" alt="lady">
+                <div class="caption">NCC w/ Edge Detection - Lady</div>
+                <div class="caption">R: (97, 10)</div>
+                <div class="caption">G: (49, 9)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/melons.jpg" alt="melons">
+                <div class="caption">NCC - Melons</div>
+                <div class="caption">R: (158, 2)</div>
+                <div class="caption">G: (81, 10)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/melons.jpg" alt="melons">
+                <div class="caption">NCC w/ Edge Detection - Melons</div>
+                <div class="caption">R: (158, 12)</div>
+                <div class="caption">G: (74, 0)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/monastery.jpg" alt="monastery">
+                <div class="caption">NCC - Monastery</div>
+                <div class="caption">R: (3, 2)</div>
+                <div class="caption">G: (-3, 2)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/monastery.jpg" alt="monastery">
+                <div class="caption">NCC w/ Edge Detection - Monastery</div>
+                <div class="caption">R: (3, 2)</div>
+                <div class="caption">G: (-3, 2)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/onion_church.jpg" alt="onion church">
+                <div class="caption">NCC - Onion Church</div>
+                <div class="caption">R: (88, 37)</div>
+                <div class="caption">G: (51, 26)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/onion_church.jpg" alt="onion church">
+                <div class="caption">NCC w/ Edge Detection - Onion Church</div>
+                <div class="caption">R: (96, 37)</div>
+                <div class="caption">G: (51, 26)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/sculpture.jpg" alt="sculpture">
+                <div class="caption">NCC - Sculpture</div>
+                <div class="caption">R: (121, -26)</div>
+                <div class="caption">G: (33, -10)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/sculpture.jpg" alt="sculpture">
+                <div class="caption">NCC w/ Edge Detection - Sculpture</div>
+                <div class="caption">R: (121, -26)</div>
+                <div class="caption">G: (33, -17)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/self_portrait.jpg" alt="self_portrait">
+                <div class="caption">NCC - Self Portrait</div>
+                <div class="caption">R: (151, 33)</div>
+                <div class="caption">G: (76, 26)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/self_portrait.jpg" alt="self_portrait">
+                <div class="caption">NCC w/ Edge Detection - Self Portrait</div>
+                <div class="caption">R: (152, 32)</div>
+                <div class="caption">G: (63, 15)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/three_generations.jpg" alt="three_generations">
+                <div class="caption">NCC - Three Generations</div>
+                <div class="caption">R: (91, 11)</div>
+                <div class="caption">G: (54, 14)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/three_generations.jpg" alt="three_generations">
+                <div class="caption">NCC w/ Edge Detection - Three Generations</div>
+                <div class="caption">R: (91, 8)</div>
+                <div class="caption">G: (54, 12)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/tobolsk.jpg" alt="tobolsk">
+                <div class="caption">NCC - Tobolsk</div>
+                <div class="caption">R: (6, 3)</div>
+                <div class="caption">G: (3, 3)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/tobolsk.jpg" alt="tobolsk">
+                <div class="caption">NCC w/ Edge Detection - Tobolsk</div>
+                <div class="caption">R: (6, 3)</div>
+                <div class="caption">G: (3, 2)</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/aligned_images_NCC/train.jpg" alt="train">
+                <div class="caption">NCC - Train</div>
+                <div class="caption">R: (76, 27)</div>
+                <div class="caption">G: (44, 6)</div>
+            </td>
+            <td>
+                <img src="media/aligned_images_NCC_edge_detection/train.jpg" alt="train">
+                <div class="caption">NCC w/ Edge Detection - Train</div>
+                <div class="caption">R: (66, 35)</div>
+                <div class="caption">G: (43, 8)</div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
 
