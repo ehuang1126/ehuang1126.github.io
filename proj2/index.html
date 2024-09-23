@@ -35,7 +35,7 @@
         }
 
         img {
-            width:500px;
+            width: 300px;
             height: auto;
         }
 
@@ -48,7 +48,57 @@
 <body>
     <h1>Project 2: Fun with Filters and Frequencies</h1>
     <p>Evan Huang</p>
-    <h2>Approach:</h2>
+    <h2>Part 1: Fun with Filters</h2>
+    <h3>1.1: Finite Different Operator</h3>
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Gradient Magnitude
+            </th>
+            <th>
+                Edge Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/cameraman.png" alt="cameraman">
+            </td>
+            <td>
+                <img src="media/image_gradients/gradient_magnitude.jpg" alt="gradient magnitude">
+            </td>
+            <td>
+                <img src="media/image_gradients/edge_map.jpg" alt="edge map">
+            </td>
+        </tr>
+    </table>
+    <h3>1.2: DoG Filters</h3>
+    <table>
+        <tr>
+            <th>
+                Blurred
+            </th>
+            <th>
+                Edge Image
+            </th>
+            <th>
+                Edge Image w/ DoG
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/image_gradients/cameraman_blurred.jpg" alt="cameraman">
+            </td>
+            <td>
+                <img src="media/image_gradients/edge_map_blurred.jpg" alt="edge map from blurred">
+            </td>
+            <td>
+                <img src="media/image_gradients/edge_map_blurred_dog.jpg" alt="edge map using dog">
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
 
