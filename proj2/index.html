@@ -31,11 +31,11 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #3a69c8e8;
         }
 
         img {
-            width: 300px;
+            width: 400px;
             height: auto;
         }
 
@@ -50,6 +50,12 @@
     <p>Evan Huang</p>
     <h2>Part 1: Fun with Filters</h2>
     <h3>1.1: Finite Different Operator</h3>
+    <p>
+        I found the gradient magnitude by convolving the image with horizontal and vertical filters to 
+    get the magnitudes of the partial derivates. The magnitude of the gradient can then be found using
+    the l2 norm. 
+    </p>
+    
     <table>
         <tr>
             <th>
@@ -75,6 +81,10 @@
         </tr>
     </table>
     <h3>1.2: DoG Filters</h3>
+    <p>
+        Blurring the image helped reduce some noise in the image and thickened the edges. Using
+        a DoG can reduce the computational demand by only requiring one convolution after precomputing the DoG. 
+    </p>
     <table>
         <tr>
             <th>
@@ -101,6 +111,9 @@
     </table>
     <h2>Part 2: Fun with Frequencies</h2>
     <h3>2.1 Image Sharpening</h3>
+    <p>
+        Sharpening was achieved by subtracting the blurred image from the original and adding it back to the original with a weight.
+    </p>
     <table>
         <tr>
             <th>
@@ -124,10 +137,49 @@
                 <img src="media/image_sharpening/taj_sharpened.jpg" alt="taj sharpened">
             </td>
         </tr>
+    </table>
+    <p>
+        This can be simplified by using the unsharp mask filter, only requiring 1 convolution. This 
+        is done by convolving the image with (1+alpha)e-alpha(g), where e is the unit impulse and g is a gaussian kernel. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Sharpened
+            </th>
+        </tr>
         <tr>
             <td>
-                <img src="media/inputs/street.jpg" alt="street">
-                <div class="caption">These images are quite large so the effect is subtle but noticeable if you look closely</div>
+                <img src="media/inputs/concert.jpeg" alt="concert">
+            </td>
+            <td>
+                <img src="media/image_sharpening/concert_sharpened.jpg" alt="concert sharpened">
+            </td>
+        </tr>
+    </table>
+    <p>
+        Sharpening was then used on blurry images to "re-sharpen" images. The effect is subtle in this example, but it can especially be seen in the "road work ahead" sign.
+
+    </p>
+
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Blurred
+            </th>
+            <th>
+                Sharpened
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/street.jpg" alt="street" width=>            
             </td>
             <td>
                 <img src="media/image_sharpening/street_blurred.jpg" alt="street blurred">
@@ -138,6 +190,10 @@
         </tr>
     </table>
     <h3>2.2 Hybrid Images</h3>
+    <p>
+        I made two hybrid images by mixing low and high frequencies of different images. The first is a hybrid of 
+        Superman with Clark Kent. The second is a hybrid of my friend's cat and my dog. 
+    </p>
     <table>
         <tr>
             <th>
@@ -173,7 +229,10 @@
             </td>
         </tr>
     </table>
-    <h4>FFT Visualizations:</h4>
+    <h4>FFT Visualizations for cat/dog hybrid:</h4>
+    <p>
+        (Circle is the cat, Aki is the dog. )
+    </p>
     <table>
         <tr>
             <td>
@@ -198,6 +257,10 @@
         </tr>
     </table>
     <h4>Failed:</h4>
+    <p>
+        I also tried making a hybrid of a Samsung and iPhone, but there aren't enough distinguishing
+        visual features to clearly differentiate the two at different distances. 
+    </p>
     <table>
         <tr>
             <th>
@@ -224,6 +287,9 @@
     </table>
     <h2>Multi-Resolution Blending</h2>
     <h3>2.3 Gaussian and Laplacian Stacks</h3>
+    <p>
+        I made Laplacian stacks for pictures of an orange and apple, along with their blended stack. This uses a simple step function as a mask. 
+    </p>
     <table>
         <tr>
             <th>
@@ -304,8 +370,10 @@
         </tr>
     </table>
     <h3>2.4 Multiresolution Blending</h3>
-    <h4>Oraple:</h4>
+    <h4>Oraple result:</h4>
     <img src="media/oraple.jpg" alt="oraple">
+    <p>The oraple worked very well. I also made a few more multiresolution blended images using irregular masks. The masks 
+        were constructed by using a Sobel edge detection filter and then flood filling certain areas of the edge map. </p>
     <table>
         <tr>
             <th>
@@ -367,7 +435,7 @@
             </td>
         </tr>
     </table>
-    <h4>Stacks for Gojo in Smash:</h4>
+    <h4>Laplacian and Blended Stacks for Gojo in Smash:</h4>
     <table>
         <tr>
             <th>
