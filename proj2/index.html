@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project 2: Fun with Filters and Frequencies</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3a69c8e8;
+        }
+
+        img {
+            width: 400px;
+            height: auto;
+        }
+
+        .caption {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Project 2: Fun with Filters and Frequencies</h1>
+    <p>Evan Huang</p>
+    <h2>Part 1: Fun with Filters</h2>
+    <h3>1.1: Finite Different Operator</h3>
+    <p>
+        I found the gradient magnitude by convolving the image with horizontal and vertical filters to 
+    get the magnitudes of the partial derivates. The magnitude of the gradient can then be found using
+    the l2 norm. 
+    </p>
+    
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Gradient Magnitude
+            </th>
+            <th>
+                Edge Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/cameraman.png" alt="cameraman">
+            </td>
+            <td>
+                <img src="media/image_gradients/gradient_magnitude.jpg" alt="gradient magnitude">
+            </td>
+            <td>
+                <img src="media/image_gradients/edge_map.jpg" alt="edge map">
+            </td>
+        </tr>
+    </table>
+    <h3>1.2: DoG Filters</h3>
+    <p>
+        Blurring the image helped reduce some noise in the image and thickened the edges. Using
+        a DoG can reduce the computational demand by only requiring one convolution after precomputing the DoG. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Blurred
+            </th>
+            <th>
+                Edge Image
+            </th>
+            <th>
+                Edge Image w/ DoG
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/image_gradients/cameraman_blurred.jpg" alt="cameraman">
+            </td>
+            <td>
+                <img src="media/image_gradients/edge_map_blurred.jpg" alt="edge map from blurred">
+            </td>
+            <td>
+                <img src="media/image_gradients/edge_map_blurred_dog.jpg" alt="edge map using dog">
+            </td>
+        </tr>
+    </table>
+    <h2>Part 2: Fun with Frequencies</h2>
+    <h3>2.1 Image Sharpening</h3>
+    <p>
+        Sharpening was achieved by subtracting the blurred image from the original and adding it back to the original with a weight.
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Blurred
+            </th>
+            <th>
+                Sharpened
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/taj.jpg" alt="taj">
+            </td>
+            <td>
+                <img src="media/image_sharpening/taj_blurred.jpg" alt="taj blurred">
+            </td>
+            <td>
+                <img src="media/image_sharpening/taj_sharpened.jpg" alt="taj sharpened">
+            </td>
+        </tr>
+    </table>
+    <p>
+        This can be simplified by using the unsharp mask filter, only requiring 1 convolution. This 
+        is done by convolving the image with (1+alpha)e-alpha(g), where e is the unit impulse and g is a gaussian kernel. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Sharpened
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/concert.jpeg" alt="concert">
+            </td>
+            <td>
+                <img src="media/image_sharpening/concert_sharpened.jpg" alt="concert sharpened">
+            </td>
+        </tr>
+    </table>
+    <p>
+        Sharpening was then used on blurry images to "re-sharpen" images. The effect is subtle in this example, but it can especially be seen in the "road work ahead" sign.
+
+    </p>
+
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Blurred
+            </th>
+            <th>
+                Sharpened
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/street.jpg" alt="street" width=>            
+            </td>
+            <td>
+                <img src="media/image_sharpening/street_blurred.jpg" alt="street blurred">
+            </td>
+            <td>
+                <img src="media/image_sharpening/street_sharpened.jpg" alt="street sharpened">
+            </td>
+        </tr>
+    </table>
+    <h3>2.2 Hybrid Images</h3>
+    <p>
+        I made two hybrid images by mixing low and high frequencies of different images. The first is a hybrid of 
+        Superman with Clark Kent. The second is a hybrid of my friend's cat and my dog. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Low-pass Image
+            </th>
+            <th>
+                High-pass Image
+            </th>
+            <th>
+                Hybrid Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/superman.jpg" alt="superman">
+            </td>
+            <td>
+                <img src="media/inputs/clark_kent.jpg" alt="clark kent">
+            </td>
+            <td>
+                <img src="media/hybrid_images/superman_clark_kent.jpg" alt="superman clark kent">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/circle.jpg" alt="circle">
+            </td>
+            <td>
+                <img src="media/inputs/aki.jpg" alt="aki">
+            </td>
+            <td>
+                <img src="media/hybrid_images/aki_circle.jpg" alt="aki circle">
+            </td>
+        </tr>
+    </table>
+    <h4>FFT Visualizations for cat/dog hybrid:</h4>
+    <p>
+        (Circle is the cat, Aki is the dog. )
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/hybrid_images/fft_outputs/circle_fft.png" alt="circle fft">
+            </td>
+            <td>
+                <img src="media/hybrid_images/fft_outputs/aki_fft.png" alt="aki fft">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/hybrid_images/fft_outputs/circle_blurred_fft.png" alt="circle blurred fft">
+            </td>
+            <td>
+                <img src="media/hybrid_images/fft_outputs/aki_high_pass_fft.png" alt="aki high pass fft">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/hybrid_images/fft_outputs/hybrid_fft.png" alt="hybrid fft">
+            </td>
+        </tr>
+    </table>
+    <h4>Failed:</h4>
+    <p>
+        I also tried making a hybrid of a Samsung and iPhone, but there aren't enough distinguishing
+        visual features to clearly differentiate the two at different distances. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Low-pass Image
+            </th>
+            <th>
+                High-pass Image
+            </th>
+            <th>
+                Hybrid Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/samsung.jpeg" alt="samsung">
+            </td>
+            <td>
+                <img src="media/inputs/iphone.jpeg" alt="iphone">
+            </td>
+            <td>
+                <img src="media/hybrid_images/iphone_samsung.jpg" alt="iphone samsung">
+            </td>
+        </tr>
+    </table>
+    <h2>Multi-Resolution Blending</h2>
+    <h3>2.3 Gaussian and Laplacian Stacks</h3>
+    <p>
+        I made Laplacian stacks for pictures of an orange and apple, along with their blended stack. This uses a simple step function as a mask. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Apple Stack
+            </th>
+            <th>
+                Orange Stack
+            </th>
+            <th>
+                Blended Stack
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_0.jpg" alt="apple stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_0.jpg", alt="orange stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_0.jpg" alt="oraple layer 0">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_1.jpg" alt="apple stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_1.jpg", alt="orange stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_1.jpg" alt="oraple layer 1">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_2.jpg" alt="apple stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_2.jpg", alt="orange stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_2.jpg" alt="oraple layer 2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_3.jpg" alt="apple stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_3.jpg", alt="orange stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_3.jpg" alt="oraple layer 3">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_4.jpg" alt="apple stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_4.jpg", alt="orange stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_4.jpg" alt="oraple layer 4">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_5.jpg" alt="apple stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_5.jpg", alt="orange stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_5.jpg" alt="oraple layer 5">
+            </td>
+        </tr>
+    </table>
+    <h3>2.4 Multiresolution Blending</h3>
+    <h4>Oraple result:</h4>
+    <img src="media/oraple.jpg" alt="oraple">
+    <p>The oraple worked very well. I also made a few more multiresolution blended images using irregular masks. The masks 
+        were constructed by using a Sobel edge detection filter and then flood filling certain areas of the edge map. </p>
+    <table>
+        <tr>
+            <th>
+                Image 1
+            </th>
+            <th>
+                Image 2
+            </th>
+            <th>
+                Mask
+            </th>
+            <th>
+                Result
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/gojo.jpeg" alt="gojo">
+            </td>
+            <td>
+                <img src="media/inputs/smash.jpeg" alt="smash">
+            </td>
+            <td>
+                <img src="media/gojo_mask.jpg" alt="gojo mask">
+            </td>
+            <td>
+                <img src="media/gojo_smash.jpg" alt="gojo smash">
+                <div class="caption">Gojo in Smash</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/gudetama_left.jpg" alt="gudetama left">
+            </td>
+            <td>
+                <img src="media/inputs/gudetama_right.jpg" alt="gudetama right">
+            </td>
+            <td>
+                <img src="media/double_gudetama_mask.jpg" alt="double gudetama mask">
+            </td>
+            <td>
+                <img src="media/double_gudetama.jpg" alt="double gudetama">
+                <div class="caption">Double Gudetama</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/gudetama.jpg" alt="gudetama">
+            </td>
+            <td>
+                <img src="media/inputs/totoro.jpeg" alt="totoro">
+            </td>
+            <td>
+                <img src="media/gudetama_totoro_mask.jpg" alt="gudetama totoro mask">
+            </td>
+            <td>
+                <img src="media/gudetama_totoro.jpg" alt="gudetama totoro">
+                <div class="caption">Totoro in Gudetama's Shell</div>
+            </td>
+        </tr>
+    </table>
+    <h4>Laplacian and Blended Stacks for Gojo in Smash:</h4>
+    <table>
+        <tr>
+            <th>
+                Gojo Stack
+            </th>
+            <th>
+                Smash Stack
+            </th>
+            <th>
+                Blended Stack
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_0.jpg" alt="gojo stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_0.jpg", alt="smash stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_0.jpg" alt="gojo_smash stack 0">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_1.jpg" alt="gojo stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_1.jpg", alt="smash stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_1.jpg" alt="gojo_smash stack 1">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_2.jpg" alt="gojo stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_2.jpg", alt="smash stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_2.jpg" alt="gojo_smash stack 2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_3.jpg" alt="gojo stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_3.jpg", alt="smash stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_3.jpg" alt="gojo_smash stack 3">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_4.jpg" alt="gojo stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_4.jpg", alt="smash stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_4.jpg" alt="gojo_smash stack 4">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_5.jpg" alt="gojo stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_5.jpg", alt="smash stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_5.jpg" alt="gojo_smash stack 5">
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
+
