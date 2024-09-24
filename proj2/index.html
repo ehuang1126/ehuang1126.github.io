@@ -222,6 +222,232 @@
             </td>
         </tr>
     </table>
+    <h2>Multi-Resolution Blending</h2>
+    <h3>2.3 Gaussian and Laplacian Stacks</h3>
+    <table>
+        <tr>
+            <th>
+                Apple Stack
+            </th>
+            <th>
+                Orange Stack
+            </th>
+            <th>
+                Blended Stack
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_0.jpg" alt="apple stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_0.jpg", alt="orange stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_0.jpg" alt="oraple layer 0">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_1.jpg" alt="apple stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_1.jpg", alt="orange stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_1.jpg" alt="oraple layer 1">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_2.jpg" alt="apple stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_2.jpg", alt="orange stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_2.jpg" alt="oraple layer 2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_3.jpg" alt="apple stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_3.jpg", alt="orange stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_3.jpg" alt="oraple layer 3">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_4.jpg" alt="apple stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_4.jpg", alt="orange stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_4.jpg" alt="oraple layer 4">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/apple_masked/apple_masked_laplacian_layer_5.jpg" alt="apple stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/orange_masked/orange_masked_laplacian_layer_5.jpg", alt="orange stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/oraple/oraple_laplacian_layer_5.jpg" alt="oraple layer 5">
+            </td>
+        </tr>
+    </table>
+    <h3>2.4 Multiresolution Blending</h3>
+    <h4>Oraple:</h4>
+    <img src="media/oraple.jpg" alt="oraple">
+    <table>
+        <tr>
+            <th>
+                Image 1
+            </th>
+            <th>
+                Image 2
+            </th>
+            <th>
+                Mask
+            </th>
+            <th>
+                Result
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/gojo.jpeg" alt="gojo">
+            </td>
+            <td>
+                <img src="media/inputs/smash.jpeg" alt="smash">
+            </td>
+            <td>
+                <img src="media/gojo_mask.jpg" alt="gojo mask">
+            </td>
+            <td>
+                <img src="media/gojo_smash.jpg" alt="gojo smash">
+                <div class="caption">Gojo in Smash</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/gudetama_left.jpg" alt="gudetama left">
+            </td>
+            <td>
+                <img src="media/inputs/gudetama_right.jpg" alt="gudetama right">
+            </td>
+            <td>
+                <img src="media/double_gudetama_mask.jpg" alt="double gudetama mask">
+            </td>
+            <td>
+                <img src="media/double_gudetama.jpg" alt="double gudetama">
+                <div class="caption">Double Gudetama</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/gudetama.jpg" alt="gudetama">
+            </td>
+            <td>
+                <img src="media/inputs/totoro.jpeg" alt="totoro">
+            </td>
+            <td>
+                <img src="media/gudetama_totoro_mask.jpg" alt="gudetama totoro mask">
+            </td>
+            <td>
+                <img src="media/gudetama_totoro.jpg" alt="gudetama totoro">
+                <div class="caption">Totoro in Gudetama's Shell</div>
+            </td>
+        </tr>
+    </table>
+    <h4>Stacks for Gojo in Smash:</h4>
+    <table>
+        <tr>
+            <th>
+                Gojo Stack
+            </th>
+            <th>
+                Smash Stack
+            </th>
+            <th>
+                Blended Stack
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_0.jpg" alt="gojo stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_0.jpg", alt="smash stack 0">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_0.jpg" alt="gojo_smash stack 0">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_1.jpg" alt="gojo stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_1.jpg", alt="smash stack 1">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_1.jpg" alt="gojo_smash stack 1">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_2.jpg" alt="gojo stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_2.jpg", alt="smash stack 2">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_2.jpg" alt="gojo_smash stack 2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_3.jpg" alt="gojo stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_3.jpg", alt="smash stack 3">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_3.jpg" alt="gojo_smash stack 3">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_4.jpg" alt="gojo stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_4.jpg", alt="smash stack 4">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_4.jpg" alt="gojo_smash stack 4">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/stacks/gojo/gojo_laplacian_layer_5.jpg" alt="gojo stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/smash/smash_laplacian_layer_5.jpg", alt="smash stack 5">
+            </td>
+            <td>
+                <img src="media/stacks/gojo_smash/gojo_smash_laplacian_layer_5.jpg" alt="gojo_smash stack 5">
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>
 
