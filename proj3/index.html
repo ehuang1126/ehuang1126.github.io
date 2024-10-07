@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project 3: Face Morphing</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3a69c8e8;
+        }
+
+        img {
+            width: 400px;
+            height: auto;
+        }
+
+        .caption {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        Project 3: Face Morphing
+    </h1>
+    <p>
+        Evan Huang
+    </p>
+    <h3>
+        Part 1: Defining Correspondences
+    </h3>
+    <table>
+        <tr>
+            <td>
+                <img src="media/evan.jpg" alt="Evan">
+                <div class="caption">Evan</div>
+            </td>
+            <td>
+                <img src="media/george.jpg" alt="George">
+                <div class="caption">George</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/evan_george_outputs/evan_triangulated.png" alt="Evan Triangulated">
+                <div class="caption">Evan triangulated</div>
+            </td>
+            <td>
+                <img src="media/evan_george_outputs/george_triangulated.png" alt="George Triangulated">
+                <div class="caption">George triangulated</div>
+            </td>
+        </tr>
+    </table>
+    <p>
+        I preprocessed the images by cropping/resizing them to the same shape and using 
+        <a href="https://www.photoroom.com/tools/white-background">this website</a> to make 
+        the backgrounds white. 
+    </p>
+
+</body>
+</html>
