@@ -80,8 +80,162 @@
     <p>
         I preprocessed the images by cropping/resizing them to the same shape and using 
         <a href="https://www.photoroom.com/tools/white-background">this website</a> to make 
-        the backgrounds white. 
+        the backgrounds white. I then used the 
+        <a href="https://cal-cs180.github.io/fa23/hw/proj3/tool.html">online correspondence tool</a>
+        to label the images. 
     </p>
 
+    <h3>
+        Part 2: Computing the Midway Face
+    </h3>
+    <table>
+        <tr>
+            <td>
+                <img src="media/evan.jpg" alt="Evan">
+                <div class="caption">Evan</div>
+            </td>
+            <td>
+                <img src="media/george.jpg" alt="George">
+                <div class="caption">George</div>
+            </td>
+            <td>
+                <img src="media/evan_george_outputs/evan_george_half.jpg" alt="Evan/George">
+                <div class="caption">Evan/George Midway</div>
+            </td>
+        </tr>
+    </table>
+    <p>
+        I computed the midway face by computing the affine transformation matrix between each corresponding triangle. 
+        I then used inverse warping and linear interpolation to determine the coloration of each triangle. 
+    </p>
+    <h3>
+        Part 3: The Morph Sequence
+    </h3>
+    <p>
+        I generated a morph sequence gif by finding different weighted averages of each image, determined by warp and cross-dissolve fractions. 
+        The following gif has 46 frames. 
+    </p>
+    <img src="media/evan_george_outputs/evan_george.gif" alt="Evan George gif">
+    <h3>
+        Part 4: The Mean Face of a Population
+    </h3>
+    <p>
+        I retrieved images from the <a href="https://fei.edu.br/~cet/facedatabase.html">FEI Dataset</a>. 
+        Using the given points, I triangulated the images based on the average points. I then morphed a set of 35 
+        neutral-faced (not smiling) images to the average shape. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original Image
+            </th>
+            <th>
+                Morphed Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/1a.jpg" alt="1a">
+            </td>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/1a_morphed.jpg" alt="1a morphed">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/2a.jpg" alt="2a">
+            </td>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/2a_morphed.jpg" alt="2a morphed">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/3a.jpg" alt="3a">
+            </td>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/3a_morphed.jpg" alt="3a morphed">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/4a.jpg" alt="4a">
+            </td>
+            <td>
+                <img src="media/FEI_dataset/FEI_morphed_examples/4a_morphed.jpg" alt="4a morphed">
+            </td>
+        </tr>
+    </table>
+    <p>
+        Taking the average of all 35 images gave the following average image:
+    </p>
+    <img src="media/FEI_dataset/FEI_neutral_avg.jpg" alt="FEI avg">
+    <p>
+        I then morphed my face into the average geometry and vice versa:
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/FEI_dataset/evan_to_fei_geometry.jpg" alt="evan to fei geometry">
+                <div class="caption">My face to average FEI dataset geometry</div>
+            </td>
+            <td>
+                <img src="media/FEI_dataset/fei_to_evan_geometry.jpg" alt="fei to evan geometry">
+                <div class="caption">Average FEI dataset face to my geometry</div>
+            </td>
+        </tr>
+    </table>
+    <h3>
+        Part 5: Caricatures; Extrapolating from the Mean
+    </h3>
+    <p>
+        I created a caricature of myself by morphing my face to the average geometry from the FEI dataset but setting the warp fraction to 1.5:
+    </p>
+    <img src="media/FEI_dataset/evan_to_fei_geometry_extra.jpg" alt="caricature">
+    <h3>
+        B&W: Changing my Age
+    </h3>
+    <p>
+        I changed my age by morphing my face into a picture of an elderly Asian man. I followed the same process as above, labeling the points 
+        using the online tool and morphing the images. 
+    </p>
+    <p>Original images:</p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/evan_for_old.jpg" alt="evan for old">
+            </td>
+            <td>
+                <img src="media/old.jpg" alt="old">
+            </td>
+        </tr>
+    </table>
+    <p>
+        Morphed images:
+    </p>
+    <table>
+        <tr>
+            <th>
+                Shape only
+            </th>
+            <th>
+                Appearance only
+            </th>
+            <th>
+                Both Shape and Appearance
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/evan_old_outputs/evan_to_old_geometry.jpg" alt="old evan shape">
+            </td>
+            <td>
+                <img src="media/evan_old_outputs/evan_to_old_appearance.jpg" alt="old evan appearance">
+            </td>
+            <td>
+                <img src="media/evan_old_outputs/evan_old_half.jpg" alt="old evan">
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
