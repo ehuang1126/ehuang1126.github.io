@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project 3: Face Morphing</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3a69c8e8;
+        }
+
+        img {
+            width: 400px;
+            height: auto;
+        }
+
+        .caption {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        Project 4: Autostitching Photo Mosaics
+    </h1>
+    <p>
+        Evan Huang
+    </p>
+    <h2>
+        4A: Image Warping and Mosaicing
+    </h2>
+    <h3>
+        Taking Photos
+    </h3>
+    <table>
+        <tr>
+            <td>
+                <img src="media/piano_left.jpg" alt="piano left">
+            </td>
+            <td>
+                <img src="media/piano_mid.jpg" alt="piano mid">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/room_left.jpg" alt="room left">
+            </td>
+            <td>
+                <img src="media/room_right.jpg" alt="room right">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/yard_left.jpg" alt="yard left">
+            </td>
+            <td>
+                <img src="media/yard_right.jpg" alt="yard right">
+            </td>
+        </tr>
+    </table>
+    <h3>
+        Recovering Homographies
+    </h3>
+    <p>
+        To recover the homographies between images, I first hand-defined several corresponding points on several images. 
+        I then used these correspondences to derive the 8 variables in the transformation matrix. This involved rearranging the 
+        transformation equation. By using more than 4 pairs of corresponding points, we have an overdetermined system, so I used the least squares solution to the system. 
+    </p>
+    <h3>
+        Image Warping
+    </h3>
+    <p>
+        To warp images into the perspective of other images, I used inverse warping and linear interpolation, similar to the previous project. 
+        I first calculated the homographies between images and applied this transformation on the corners to determine the shape of the resulting warped image. From there,
+        I used inverse warping and interpolated pixel values from the original, unwarped image. The final image is translated to avoid having any negative pixel coordinates. 
+    </p>
+    <h3>
+        Image Rectification
+    </h3>
+    <p>
+        To verify the correctness of the previous two functions, I warped various images into their rectified viewing angles:
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Rectified
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/keyboard.jpg" alt="keyboard">
+            </td>
+            <td>
+                <img src="media/keyboard_rect.jpg" alt="keyboard rect">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/poster.jpg" alt="poster">
+            </td>
+            <td>
+                <img src="media/poster_rect.jpg" alt="poster">
+            </td>
+        </tr>
+    </table>
+    <h3>
+        Image Mosaics
+    </h3>
+    <p>
+        Finally, I used the warping function to generate mosaic images. To align images, I applied the translation from the image warping to the unwarped image. 
+        To blend the overlapping areas of the images, I utilized a weighted average based on the distance transform of each image. Specifically, pixels in the overlapping area are weighted by their 
+        relative distance from the non-overlapping areas of the original images. This helps to avoid any seams between images. Images that have more extreme transformations are cropped to avoid extremely large mosaics. 
+    </p>
+    <h4>
+        Results: 
+    </h4>
+    <table>
+        <tr>
+            <td>
+                <img src="media/piano_mosaic.jpg" alt="piano mosaic" style="width: 700px">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/room_mosaic.jpg" alt="room mosaic" style="width: 700px">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/yard_mosaic.jpg" alt="yard mosaic" style="width: 700px">
+            </td>
+        </tr>
+    </table>
+</body>
