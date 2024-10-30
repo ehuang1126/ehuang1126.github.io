@@ -35,7 +35,7 @@
         }
 
         img {
-            width: 400px;
+            width: 600px;
             height: auto;
         }
 
@@ -59,6 +59,9 @@
     <h3>
         Taking Photos
     </h3>
+    <p>
+        I used the following photos for this project. Corresponding pictures were taken from the same location. 
+    </p>
     <table>
         <tr>
             <td>
@@ -147,18 +150,116 @@
     <table>
         <tr>
             <td>
-                <img src="media/piano_mosaic.jpg" alt="piano mosaic" style="width: 700px">
+                <img src="media/piano_mosaic.jpg" alt="piano mosaic" style="width: 1000px">
             </td>
         </tr>
         <tr>
             <td>
-                <img src="media/room_mosaic.jpg" alt="room mosaic" style="width: 700px">
+                <img src="media/room_mosaic.jpg" alt="room mosaic" style="width: 1000px">
             </td>
         </tr>
         <tr>
             <td>
-                <img src="media/yard_mosaic.jpg" alt="yard mosaic" style="width: 700px">
+                <img src="media/yard_mosaic.jpg" alt="yard mosaic" style="width: 1000px">
             </td>
         </tr>
     </table>
+
+    <h2>
+        4B: Feature Matching for Autostitching 
+    </h2>
+    <h3>
+        Detecting Corner Features
+    </h3>
+    <p>
+        I used the provided Harris detector to find Harris corners in images. This uses a single-scale implementation and thresholds were manually 
+        selected for each image based on testing. For this image, I used a threshold of 0.03, resulting in around 2000 Harris corner points. 
+    </p>
+    <img src="media/harris_corners.png" alt="harris corners" style="width: 1000px">
+
+    <h3>
+        Adaptive Non-maximal Suppresion
+    </h3>
+    <p>
+        To find points with stronger corner values, I used adaptive non-maximal suppresion (ANMS) to filter the interest points. This chooses interest points 
+        by only selecting points that are local maxima within a given pixel radius. This helps to give points that are strong corners more uniformly distributed across the image. 
+        My implementation iteratively reduces this radius until a target number of points is 
+        reached or the radius is smaller than a user-defined minimum. These two parameters are selected through testing depending on the image. For the room image, 
+        ANMS chooses about 500 of the strongest interest points from the original 2000. 
+    </p>
+    <img src="media/harris_corners_anms.png" alt="harris corners ANMS" style="width: 1000px">
+
+    <h3>
+        Feature Descriptor Extraction
+    </h3>
+    <p>
+        In order to find corresponding interest points between images, we need some descriptor for each interest point. For this project, I used an axis-aligned feature descriptor. 
+        To do this, I applied a Gaussian blur to a 40x40 pixel window around each interest point, downsampling them to 8x8 windows. These features can then be used to compare interest points
+        across images. 
+    </p>
+
+    <h3>
+        Feature Matching
+    </h3>
+    <p>
+        Now that we have interest points and feature descriptors, we can compare interest points to find corresponding points across images to define homographies. I found matching points by using Lowe's trick. For each point in 
+        one image, I found the ratio of similarity with the 1-NN and the 2-NN. Only points with a ratio below a certain threshold are selected. The logic here is that points that are strong matches should be 
+        significantly more similar to their first nearest neighbor than the next nearest neighbor. Using a threshold of 0.4, this left 59 pairs of corresponding points for the room images:
+    </p>
+    <img src="media/feature_matches.png" alt="feature matches" style="width: 1000px">
+    <h3>
+        Defining Robust Homographies using RANSAC
+    </h3>
+    <p>
+        Clearly, there are still some outlier points (see the artwork in the right image, which isn't even in frame for the left image). 
+        To help mitigate the effect of these outliers, I used Random Sample Consensus (RANSAC) to define more robust homographies. This involves iteratively randomly sampling 4 pairs of corresponding points, computing a 
+        homography from these 4 correspondences, and tracking the number of inliers. The homography with the most inliers is then selected and a final homography is calculated using these inliers. 
+    </p>
+    <h3>
+        Results
+    </h3>
+    <p>
+        (Images are cropped to better display the stitching)
+    </p>
+    <table>
+        <tr>
+            <th>
+                Manual Correspondences
+            </th>
+            <th>
+                Automatic Correspondences
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/piano_mosaic.jpg" alt="piano mosaic">
+            </td>
+            <td>
+                <img src="media/piano_mosaic_part_b.jpg" alt="piano mosaic b">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/room_mosaic.jpg" alt="room mosaic">
+            </td>
+            <td>
+                <img src="media/room_mosaic_part_b.jpg" alt="room mosaic b">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/yard_mosaic.jpg" alt="yard mosaic">
+            </td>
+            <td>
+                <img src="media/yard_mosaic_part_b.jpg" alt="piano mosaic">
+            </td>
+        </tr>
+    </table>
+    <h3>
+        Takeaways
+    </h3>
+    <p>
+        I was quite careful when manually selecting corresponding points, so there is not much of a difference between the manual and automatic mosaics. 
+        This was a very interesting application of linear algebra to images and I found the techniques for mitigating outliers (ANMS, RANSAC, Lowe's trick, etc.) very satisfying. 
+    </p>
 </body>
