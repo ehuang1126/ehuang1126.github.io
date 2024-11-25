@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project 5: Fun with Diffusion Models</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3a69c8e8;
+        }
+
+        img {
+            min-width: 128px;
+            height: auto;
+        }
+
+        .caption {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        Project 5: Fun with Diffusion Models
+    </h1>
+    <h2>
+        Part A: The Power of Diffusion Models
+    </h2>
+    <h3>
+        Part 0: Setup
+    </h3>
+    <p>
+        Using the pretrained diffusion model, I sampled using 3 different text prompts at 2 different numbers of inference steps. I used a random seed of 180. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                num_inference_steps=20
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_0/samples.jpg" alt="samples">
+            </td>
+        <tr>
+            <th>
+                num_inference_steps=100
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_0/samples_100.jpg" alt="samples">
+            </td>
+        </tr>
+    </table>
+    <p>
+        Increasing the number of inference steps increases computation time, but it seems to generate more detailed images. 
+    </p>
+    <h3>
+        Part 1: Sampling Loops
+    </h3>
+    <h4>
+        1.1: Implementing the Forward Process
+    </h4>
+    <p>
+        To generate a noisy image, I sample from a Gaussian distribution to add noise and scale the image. Each image depends on the 
+        time point and the noise coefficients. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                t=0 (clean image)
+            </th>
+            <th>
+                t=250
+            </th>
+            <th>
+                t=500
+            </th>
+            <th>
+                t=750
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.1/clean.png" alt="clean">
+            </td>
+            <td>
+                <img src="media/1.1/noise_250.png" alt="noise 250">
+            </td>
+            <td>
+                <img src="media/1.1/noise_500.png" alt="noise 500">
+            </td>
+            <td>
+                <img src="media/1.1/noise_750.png" alt="noise 750"
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.2 Classical Denoising
+    </h4>
+    <p>
+        Here, I used the classical denoising method of using Gaussian blur filtering. There are still considerable artifacts in the blurred images, 
+        especially at higher noise levels. 
+    </p>
+    <table>
+        <tr>
+
+            <th>
+                t=250
+            </th>
+            <th>
+                t=500
+            </th>
+            <th>
+                t=750
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.1/noise_250.png" alt="noise 250">
+            </td>
+            <td>
+                <img src="media/1.1/noise_500.png" alt="noise 500">
+            </td>
+            <td>
+                <img src="media/1.1/noise_750.png" alt="noise 750"
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.2/sharpened_250.png" alt="sharpened 250">
+            </td>
+            <td>
+                <img src="media/1.2/sharpened_500.png" alt="sharpened 500"
+            </td>
+            <td>
+                <img src="media/1.2/sharpened_750.png" alt="sharpened 750">
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.3 One-step Denoising
+    </h4>
+    <p>
+        Here, I used a pretrained diffusion model to denoise images in one step. This works much better than classical denoising, 
+        but higher levels of noise still pose a challenge for this. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                t=250
+            </th>
+            <th>
+                t=500
+            </th>
+            <th>
+                t=750
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.1/noise_250.png" alt="noise 250">
+            </td>
+            <td>
+                <img src="media/1.1/noise_500.png" alt="noise 500">
+            </td>
+            <td>
+                <img src="media/1.1/noise_750.png" alt="noise 750"
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.3/denoised_250.png" alt="sharpened 250">
+            </td>
+            <td>
+                <img src="media/1.3/denoised_500.png" alt="sharpened 500"
+            </td>
+            <td>
+                <img src="media/1.3/denoised_750.png" alt="sharpened 750">
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.4 Iterative Denoising
+    </h4>
+    <p>
+        Here, I iteratively denoised using the pretrained model over strided timesteps instead of trying to denoise in one step. This is by far the best result so far. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.4/iter_90.png" alt="iter 90">
+                <div class="caption">t = 90</div>
+            </td>
+            <td>
+                <img src="media/1.4/iter_240.png" alt="iter 240">
+                <div class="caption">t = 240</div>
+            </td>
+            <td>
+                <img src="media/1.4/iter_390.png" alt="iter 390">
+                <div class="caption">t = 390</div>
+            </td>
+            <td>
+                <img src="media/1.4/iter_540.png" alt="iter 540">
+                <div class="caption">t = 540</div>
+            </td>
+            <td>
+                <img src="media/1.4/iter_690.png" alt="iter 690">
+                <div class="caption">t = 690</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.1/clean.png" alt="orig">
+                <div class="caption">original</div>
+            </td>
+            <td>
+                <img src="media/1.4/iterative_denoise.png" alt="iteratively denoised">
+                <div class="caption">iteratively denoised</div>
+            </td>
+            <td>
+                <img src="media/1.4/one_step.png" alt="">
+                <div class="caption">one step denoised</div>
+            </td>
+            <td>
+                <img src="media/1.2/sharpened_750.png" alt="">
+                <div class="caption">gaussian blurred</div>
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.5 Diffusion Model Sampling
+    </h4>
+    <p>
+        By using pure noise as an input to our iterative denoising function, we can generate new images from scratch. Using 
+        "a high quality image" as our prompt, here are 5 sampled images. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.5/sample_1.png" alt="sample 1">
+            </td>
+            <td>
+                <img src="media/1.5/sample_2.png" alt="sample 2">
+            </td>
+            <td>
+                <img src="media/1.5/sample_3.png" alt="sample 3">
+            </td>
+            <td>
+                <img src="media/1.5/sample_4.png" alt="sample_4">
+            </td>
+            <td>
+                <img src="media/1.5/sample_5.png" alt="sample 5">
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.6 Classifier Free Guidance
+    </h4>
+    <p>
+        We then use Classifier-Free Guidance (CFG) to improve image quality, at the expense of image diversity. This involves running the 
+        denoiser twice for each time step, generating a conditional and unconditional noise estimate. The final noise estimate for each time step 
+        combines both of these estimates using a hyperparameter scale. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.6/cfg_1.png" alt="cfg 1">
+            </td>
+            <td>
+                <img src="media/1.6/cfg_2.png" alt="cfg 2">
+            </td>
+            <td>
+                <img src="media/1.6/cfg_3.png" alt="cfg 3">
+            </td>
+            <td>
+                <img src="media/1.6/cfg_4.png" alt="cfg 4">
+            </td>
+            <td>
+                <img src="media/1.6/cfg_5.png" alt="cfg 5">
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.7 Image to Image translation
+    </h4>
+    <p>
+        Here, I follow the SDEdit algorithm to generate images that are progressively more similar to a starting image. 
+        This involves taking an original test image, noising it, and forcing it back onto the image manifold unconditionally. This 
+        worked better for the Campanile and dog images than the cat image. I suspect this is because there are very few images in the 
+        training set that are similar to the cat image. Interestingly, using i_start=20 for the cat image changed the cat into a pair of shoes,
+        which makes sense since she's on a shoe rack!
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.1/clean.png" alt="clean" width="256">
+                <div class="caption">original capanile photo</div>
+            </td>
+            <td>
+                <img src="media/origs/aki.jpg" alt="aki" width="256">
+                <div class="caption">original dog photo</div>
+            </td>
+            <td>
+                <img src="media/origs/circle.jpg" alt="circle" width="256">
+                <div class="caption">original cat photo</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.7/campanile.jpg" alt="campanile">
+            </td>
+            <td>
+                <img src="media/1.7/aki.jpg" alt="aki">
+            </td>
+            <td>
+                <img src="media/1.7/circle.jpg" alt="circle">
+            </td>
+        </tr>
+        
+    </table>
+    <h4>
+        1.7.1 Editing Hand-drawn and Web Images
+    </h4>
+    <p>
+        Here I used the same process as the previous section, but using hand-drawn and other nonrealistic images to project them to the 
+        natural image manifold. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/origs/gojo.png" alt="gojo">
+                <div class="caption">Original Gojo image</div>
+            </td>
+            <td>
+                <img src="media/1.7.1/gojo_series.jpg" alt="gojo" width="960">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/origs/buff.png" alt="buff">
+                <div class="caption">Original buff guy drawing</div>
+            </td>
+            <td>
+                <img src="media/1.7.1/buff_series.jpg" alt="buff" width="960">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/origs/desert.png" alt="sand">
+                <div class="caption">Original desert drawing</div>
+            </td>
+            <td>
+                <img src="media/1.7.1/desert_series.jpg" alt="buff" width="960">
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.7.2 Inpainting
+    </h4>
+    <p>
+        I then followed the RePaint paper to implemenet inpainting. At every step in the denoising loop, we force 
+        the image pixels to match the original based on the given mask. I used this to add a new top to the Capanile, remove the audience 
+        from a concert picture, and remove a fence from a field picture. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original
+            </th>
+            <th>
+                Mask
+            </th>
+            <th>
+                Inpainted Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.1/clean.png" alt="campanile">
+            </td>
+            <td>
+                <img src="media/1.7.2/campanile_mask.png" alt="campanile mask">
+            </td>
+            <td>
+                <img src="media/1.7.2/campanile_inpainted_3.png" alt="campanile">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/origs/concert.jpg" alt="concert" width="64">
+            </td>
+            <td>
+                <img src="media/1.7.2/concert_mask.png" alt="concert mask">
+            </td>
+            <td>
+                <img src="media/1.7.2/concert_inpainted.png" alt="concert">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/origs/field.jpeg" alt="field" width="64">
+            </td>
+            <td>
+                <img src="media/1.7.2/field_mask.png" alt="field mask">
+            </td>
+            <td>
+                <img src="media/1.7.2/field_inpainted.png" alt="field">
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.7.3 Text-conditioned Image-to-Image Translation
+    </h4>
+    <p>
+        I then perform image-to-image translation again but with a text prompt. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.7.3/campanile.png" alt="campanile" width="960">
+                <div class="caption">Prompt: "a rocket ship"</div>
+            </td>
+            <td>
+                <img src="media/1.1/clean.png" alt="campanile">
+                <div class="caption">original image</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.7.3/aki.jpg" alt="aki" width="960">
+                <div class="caption">Prompt: "a photo of a dog"</div>
+            </td>
+            <td>
+                <img src="media/origs/aki.jpg" alt="campanile" width="64">
+                <div class="caption">original image</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.7.3/evan.jpg" alt="aki" width="960">
+                <div class="caption">Prompt: "a photo of a hipster barista"</div>
+            </td>
+            <td>
+                <img src="media/origs/evan.jpeg" alt="evan" width="64">
+                <div class="caption">original image</div>
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.8 Visual Anagrams
+    </h4>
+    <p>
+        Here, I implement visual anagrams to create optical illusions. I use 2 prompts to generate images that look like
+        one of the prompts in one orientation, and the other prompt in another orientation. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.8/campfire_old_2.png" alt="campfire old">
+                <div class="caption">an oil painting of people around a campfire</div>
+            </td>
+            <td>
+                <img src="media/1.8/campfire_old_2_flipped.png" alt="campfire old flipped">
+                <div class="caption">an oil painting of an old man</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.8/pencil_rocket.png" alt="pencil rocket">
+                <div class="caption">a pencil</div>
+            </td>
+            <td>
+                <img src="media/1.8/pencil_rocket_flipped.png" alt="campfire old flipped">
+                <div class="caption">a rocket</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/1.8/dog_barista.png" alt="dog guy">
+                <div class="caption">dog</div>
+            </td>
+            <td>
+                <img src="media/1.8/dog_barista_flipped.png" alt="dog guy flipped">
+                <div class="caption">hipster barista</div>
+            </td>
+        </tr>
+    </table>
+    <h4>
+        1.9 Hybrid Images
+    </h4>
+    <p>
+        Here, I implement another form of optical illusions in hybrid images. Essentially, the low frequencies of the image come from 
+        one prompt, and the high frequencies come from another prompt. This involves using low-pass filters on one noise estimate, and high-pass filters on the other noise estimate. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/1.9/waterfall_skull_1.png" alt="waterfall skull">
+                <div class="caption">close: waterfalls</div>
+                <div class="caption">far: skull</div>
+            </td>
+            <td>
+                <img src="media/1.9/waterfall_coast.png" alt="waterfall coast">
+                <div class="caption">close: waterfalls</div>
+                <div class="caption">far: coast</div>
+            </td>
+            <td>
+                <img src="media/1.9/dog_guy.png" alt="waterfall coast">
+                <div class="caption">close: dog</div>
+                <div class="caption">far: man</div>
+            </td>
+        </tr>
+    </table>
+    <h2>
+        Part B: Diffusion Models from Scratch
+    </h2>
+    <p>
+        In the next section, I train a diffusion model from scratch using the MNIST dataset. 
+    </p>
+    <h3>
+        Part 1: Training a Single-Step Denoising UNET
+    </h3>
+    <p>
+        First, I need to write a forward function to add noise to images. Here are the noised images at different levels:
+    </p>
+    <img src="media/part_2/noise_process.png" alt="noises" width="1024">
+    <p>
+        Then, I need to train a UNET for single-step denoising. I followed the given structure and built the 
+        neural network in PyTorch. This network denoises images at noise level sigma=0.5. After constructing each layer, I trained using an L2 loss and an Adam optimizer with a 
+        learning rate of 1e-4. I display results after epochs 1 and 5. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/part_2/unconditional_epoch_1.png" alt="epoch 1">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_2/unconditional_epoch_5.png" alt="epoch 5">
+            </td>
+        </tr>
+    </table>
+    <img src="media/part_2/unconditional_training_loss.png" alt="uncond loss">
+    <h4>
+        1.2.2 Out of Distribution Testing
+    </h4>
+    <p>
+        Although the model was trained for images noised with sigma=0.5, I can still test to see how well it does with other levels of noise:
+    </p>
+    <img src="media/part_2/unconditional_out_of_distribution.png" alt="out of distribution" width="1440">
+    <h3>
+        Part 2: Training a Diffusion Model
+    </h3>
+    <h4>
+        2.1 Adding Time Conditioning to UNet
+    </h4>
+    <p>
+        To make the model account for varying levels of noise, I need to add time-conditioning to it. This invovles adding 2 more fully-connected blocks to the model. 
+        Training also becomes more complex, as we also need to account for random times. I trained for 20 epochs using a variable learning rate. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/part_2/ddpm_epoch_5.png" alt="epoch 5">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_2/ddpm_epoch_20.png" alt="epoch 20">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_2/ddpm_training_loss.png" alt="training loss">
+            </td>
+        </tr>
+    </table>
+
+
+    <h4>
+        2.4 Adding Class Conditioning 
+    </h4>
+    <p>
+        Looking at the results of time-conditioned image generation, there are still some fake digits in the sampled results. Adding class conditioning fixes this issue. 
+        To implement class-conditioning, I add two more fully-connected blocks to the model based on a one-hot encoded vector representing the digit class (0-9). I also 
+        implement dropout to ensure the UNet will works unconditionally. This allows me to use CFG to generate much cleaner results:
+    </p>
+    <table>
+        <tr>
+            <td>
+                <img src="media/part_2/class_cond_ddpm_epoch_5.png" alt="epoch 5">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_2/class_cond_ddpm_epoch_20.png" alt="epoch 20">
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <img src="media/part_2/class_cond_ddpm_training_loss.png" alt="training loss">
+            </td>
+        </tr>
+    </table>
+</body>
