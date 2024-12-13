@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Final Projects: Image Quilting and Light Field Cameras</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3a69c8e8;
+        }
+
+        img {
+            min-width: 400px;
+            height: auto;
+        }
+
+        .caption {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        Final Projects: Image Quilting and Light Field Cameras
+    </h1>
+    <h2>
+        Part 1: Image Quilting for Texture Synthesis and Transer
+    </h2>
+    <p>
+        In this part, I implement the image quilting algorithm for texture synthesis and transfer from 
+        <a href="https://people.eecs.berkeley.edu/~efros/research/quilting/quilting.pdf">this paper</a>. This involves placing different "patches" of texture
+        and using various methods to smooth edges. Using sample images of different textures,
+        this algorithm can generate new images with the same texture. By also considering correspondence maps, we can also "transfer" textures to other images. 
+    </p>
+    <h3>
+        Naive solution: Randomly Sampled Texture. 
+    </h3>
+    <p>
+        The simplest way to implement this algorithm is to randomly sample patches from the texture images and tile them directly into 
+        the result. However, this leaves clear seams between patches and there is no attempt at making neighboring patches seamless. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original Texture
+            </th>
+            <th>
+                Generated Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/bricks_small.jpg" alt="brick texture">
+            </td>
+            <td>
+                <img src="media/quilt_random.jpeg" alt="random quilt">
+            </td>
+        </tr>
+    </table>
+
+    <h3>
+        Overlapping patches
+    </h3>
+    <p>
+        In order to reduce the visual effects of seams between patches, we allow for overlap between patches. Instead of 
+        randomly sampling images from the sample texture, we choose patches that minimize the SSD (sum of squared differences) of the 
+        overlapping regions of patches, within a given tolerance. The SSD can be efficiently computed using filtering operations. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original Texture
+            </th>
+            <th>
+                Generated Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/bricks_small.jpg" alt="brick texture">
+            </td>
+            <td>
+                <img src="media/quilt_simple.jpeg" alt="simple quilt">
+            </td>
+        </tr>
+    </table>
+    <h3>
+        Seam Finding
+    </h3>
+    <p>
+        Adding overlap already greatly improves visual flow between patches, but there are still some visible seams due to patches being rectangular. To remove 
+        these edge artifacts, we find the min-cut in the overlap between patches instead of directly overlaying patches. This can be efficiently computed using dynamic programming. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original Texture
+            </th>
+            <th>
+                Generated Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/bricks_small.jpg" alt="brick texture">
+            </td>
+            <td>
+                <img src="media/quilt_cut.jpeg" alt="cut quilt">
+            </td>
+        </tr>
+    </table>
+
+    <h3>
+        Texture Transfer
+    </h3>
+    <p>
+        Now that we can generate texture images, we can modify this algorithm to be used for texture transfer. The texture synthesis algorithm uses the SSD
+        between overlapping portions of patches as a loss function for patch selection. By incorporating an extra term in this loss that describes similarity to a guidance image, 
+        we can influence the resulting image to have the same shape as the guidance image. Specifically, I use the SSD of each candidate patch with the current window in the guidance image. These two loss terms are 
+        combined using a parameter alpha. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Original Texture
+            </th>
+            <th>
+                Guidance Image
+            </th>
+            <th>
+                Generated Image
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/sketch.jpg" alt="sketch texture">
+            </td>
+            <td>
+                <img src="media/inputs/feynman.jpg" alt="feynman">
+            </td>
+            <td>
+                <img src="media/feynman_sketch.jpeg" alt="feynman sketch">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/inputs/text_small.jpg" alt="text texture">
+            </td>
+            <td>
+                <img src="media/inputs/feynman.jpg" alt="feynman">
+            </td>
+            <td>
+                <img src="media/feynman_text.jpeg" alt="feynman text">
+            </td>
+        </tr>
+    </table>
+
+    <h3>Bells and Whistles: Iterative Texture Transfer</h3>
+    <p>
+        The texture transfer algorithm can be further improved by iteratively transferring texture, reducing block size with each iteration. 
+        Thus, patches are matched with overlapping patches but also with the previous iteration's result. Iterations with larger block sizes prioritize
+        matching the guidance image, while the smaller blocks prioritize smoothness between patches. This allows for more detailed and smooth resultant images. 
+    </p>
+    <table>
+        <tr>
+            <th>
+                Single-pass Texture Transfer
+            </th>
+            <th>
+                Iterative Texture Transfer
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/feynman_sketch.jpeg" alt="feynman sketch">
+            </td>
+            <td>
+                <img src="media/feynman_sketch_iterative.jpeg" alt="feynman sketch iter">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="media/feynman_text.jpeg" alt="feynman text">
+            </td>
+            <td>
+                <img src="media/feynman_text_iterative.jpeg" alt="feynman text iter">
+            </td>
+        </tr>
+    </table>
+    <h2>
+        Part 2: Light Field Cameras for Depth Refocusing and Aperture Adjustment
+    </h2>
+    <p>
+        In this part, I used sample datasets from the <a href="http://lightfield.stanford.edu/lfs.html">Stanford Light Field Archive</a> to vary the perceived depth and aperture of images. 
+    </p>
+    <h3>
+        Depth Refocusing
+    </h3>
+    <p>
+        To change the focus of images, we simply need to shift the grid images according to their pixel distances from the "center" image and then average. Changing the scale factor of these displacements shifts the focus from far to close. 
+    </p>
+    <img src="media/chess_refocused.gif" alt="chess gif">
+    <table>
+        <tr>
+            <td>
+                <img src="media/chess_refocused_0.jpeg" alt="chess 0" width="400px">
+                <div class="caption">c = -0.1</div>
+            </td>
+            <td>
+                <img src="media/chess_refocused_5.jpeg" alt="chess 5" width="400px">
+                <div class="caption">c = 0.1</div>
+            </td>
+            <td>
+                <img src="media/chess_refocused_10.jpeg" alt="chess 10" width="400px">
+                <div class="caption">c = 0.3</div>
+            </td>
+        </tr>
+    </table>
+    <p>
+        As you can see, the focus shifts from the back of the chessboard toward the front. 
+    </p>
+    <h3>
+        Aperture Adjustment
+    </h3>
+    <p>
+        To adjust the aperture, we keep the focused point constant while changing the number of images used in the averaging. 
+        Included pictures are determined by their camera coordinates in the grid; only pictures within a given radius of the center image are included. This 
+        radius mimics the aperture. 
+    </p>
+    <img src="media/aperture_images.gif" alt="aperture gif">
+    <table>
+        <tr>
+            <td>
+                <img src="media/aperture_images_0.jpeg" alt="ap 0" width="400px">
+                <div class="caption">r = 0 (original center image)</div>
+            </td>
+            <td>
+                <img src="media/aperture_images_4.jpeg" alt="ap 4" width="400px">
+                <div class="caption">r = 4</div>
+            </td>
+            <td>
+                <img src="media/aperture_images_8.jpeg" alt="ap 8" width="400px">
+                <div class="caption">r = 8</div>
+            </td>
+        </tr>
+    </table>
+    <h2>
+        Summary/Reflections
+    </h2>
+    <p>
+        I learned some interesting yet surprisingly simple techniques to generate interesting results in these projects. Thanks to course staff for a great semester!
+    </p>
+</body>
